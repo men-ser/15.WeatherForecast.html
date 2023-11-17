@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"  content="width=device-width, initial-scale=1.0">
+  <title>Meniailo_Ajax_DZ15_WeatherForecast</title>
+  <link rel="stylesheet" type="text/css" href="styleDZ15.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+  <div class="main container column">
+    <form id="form" class="" action="https://api.weatherstack.com/current">
+    <div class="block1 item">
+      <div class="blockA flex column">
+        <div id="getCity" name="getCity" class="flex"> Город, Страна</div>
+      
+        <div class="  flex">
+          <div id="ico" name="setIco" class="widthIco shadow column">
+              <div  ><img id="icoImg" src="image/rain.png"  alt="ico"></div>
+              <div id="icoLabel" name="labelIco">Состояние</div>
+          </div>
+            <div id="minmax">
+                <div id="temp" name="setTemper" class="widthTemp ">-- °C</div>
+                <div class="flex row minmax">
+                    <label for="tempMin">Мин. темпер.<div id="tempMin"> -- °C</div></label>
+                    <label for="tempMax">Макс. темпер.<div id="tempMax"> -- °C</div></label>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="blockB flex column">
+      <div id="time"  class="flex column" >
+      <div>Время последнего обновления:</div>
+      <div id="timeLast" name="time">00-00-0000</div></div>
+      
+      <div id="options" class=" item column">
+        <div>Ветер,kpH:
+        <span id="wind" name="wind">----</span></div>
+        <div class="span-marg">Влажность,%:
+        <span id="pp"  name="pp">----</span></div>
+        <div>Давление,mb:
+        <span id="press" name="press">----</span></div>
+      </div>
+    </div>
+    
+  </div>
+  <div class="row">
+  <div class="block3 container">
+   <div class="item2   column">
+       <div id="day1-w" class="flex  w-font">Пн</div>
+       <div id="day1-t" class="flex w-font">00-00-0000</div>
+       <div ><img id="icoImg1" src="image/rain.png"  alt="ico" class="icoImg shadow "></div>
+       <div id="day1-tp" class="flex ">--°C</div>
+   </div>
+   <div class="item2   column">
+       <div id="day2-w" class="flex  w-font">Вт</div>
+       <div id="day2-t" class="flex w-font">00-00-0000</div>
+       <div ><img id="icoImg2" src="image/rain.png"  alt="ico" class="icoImg shadow "></div>
+       <div id="day2-tp" class="flex ">--°C</div>
+   </div>
+   <div class="item2   column">
+       <div id="day3-w" class="flex  w-font">Ср</div>
+       <div id="day3-t" class="flex w-font">00-00-0000</div>
+       <div ><img id="icoImg3" src="image/rain.png"  alt="ico" class="icoImg shadow "></div>
+       <div id="day3-tp" class="flex ">--°C</div></div>
+   <div class="item2   column">
+       <div id="day4-w" class="flex  w-font">Чт</div>
+       <div id="day4-t" class="flex w-font">00-00-0000</div>
+       <div ><img id="icoImg4" src="image/rain.png"  alt="ico" class="icoImg shadow "></div>
+       <div id="day4-tp" class="flex ">--°C</div>
+   </div>
+   <div class="item2  column">
+       <div id="day5-w" class="flex  w-font">Пт</div>
+       <div id="day5-t" class="flex w-font">00-00-0000</div>
+       <div ><img id="icoImg5" src="image/rain.png"  alt="ico" class="icoImg shadow "></div>
+       <div id="day5-tp" class="flex ">--°C</div>
+   </div>
+    </div >
+    <div class="block2 column">
+      <input type="text" size="5" id="setCity" name="setCity" placeholder="input City" autocomplete="on">
+      <input type="text" size="5" id="setCountry" name="country" placeholder="country,ex:UA
+      )" autocomplete="on">
+      <input type="submit" value="Show weather">
+    </div>
+  </div>
+</form>
+  </div>
+  <script type="text/javascript">
+
+      $(function(){
+        $("#form").submit(function(event) {
+            event.preventDefault();
+            let imgsrc = 'https://openweathermap.org/img/w/';//.png
+            /*const watchID = navigator.geolocation.watchPosition((position) => {
+                doSomething(position.coords.latitude, position.coords.longitude);
+            });
+            console.log(watchID);*/
+            let queryB = ($("#setCountry").val()==''?',UA':','+$("#setCountry").val());
+            let queryA = ($("#setCity").val()==''?'Kyiv':$("#setCity").val());
+                  $.ajax({
+                      url: 'https://api.openweathermap.org/data/2.5/forecast',
+                      data: {
+                          q: queryA+(queryB==null?'':','+queryB),
+                          appid: 'edadb4756808c234798f311cc1e37a46',
+                          units: 'metric',
+                          cnt: 40,
+                          lang:'ua, uk'
+                      },
+                      success: function(apiResponse) {
+                          console.log(apiResponse);
+
+                          $('#getCity').html(apiResponse.city.name+', '+apiResponse.city.country);
+                          let date = new Date(apiResponse.list[0].dt*1000);
+                          $('#timeLast').html(date.toUTCString());
+                          $('#icoImg').attr('src',imgsrc+apiResponse.list[0].weather[0].icon+'.png');
+                          $('#icoLabel').html(apiResponse.list[0].weather[0].description);
+                          $('#temp').html(apiResponse.list[0].main.temp+'°C');
+                          $('#tempMin').html(apiResponse.list[0].main.temp_min+'°C');
+                          $('#tempMax').html(apiResponse.list[0].main.temp_max+'°C');
+                          $('#wind').html(parseFloat(apiResponse.list[0].wind.speed*3.6).toFixed(1));
+                          $('#pp').html(apiResponse.list[0].main.humidity);
+                          $('#press').html(apiResponse.list[0].main.pressure);
+
+                          let p=1;
+                          let week =['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+                          for (let i=8;i<40;(i==32?i+=7:i+=8)){
+                              let dateW = new Date(apiResponse.list[i].dt*1000);
+                              $('#day'+[p]+'-w').html(week[dateW.getDay()]);
+                              $('#day'+[p]+'-t').html(dateW.getDate()+'.'+(dateW.getMonth()+1)+'.'+dateW.getFullYear()%100);
+                              $('#icoImg'+[p]).attr('src',imgsrc+apiResponse.list[i].weather[0].icon+'.png');
+                              $('#day'+[p]+'-tp').html(apiResponse.list[i].main.temp+'°C');
+                                p++;
+                          }
+
+                      },
+                      error: function (x, y, z) {
+                        console.log(x + '\n' + y + '\n' + z);}
+                  });
+        })
+
+    });
+  </script>
+  <div id="result"></div>
+</body>
+</html>
